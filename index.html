@@ -917,28 +917,32 @@
     <section class="section section-alt" id="preise">
       <div class="pricing-header">
         <h2>Preis berechnen</h2>
-        <p>Wählen Sie Ihre Daten und sehen Sie sofort den Gesamtpreis — inkl. aller Kosten und Rabatte.</p>
       </div>
 
-      <!-- Main Calculator Card -->
       <div class="price-calculator">
-        <!-- Calendar date picker -->
-        <div class="pc-calendar-wrap">
-          <div class="pc-cal-header">
-            <button class="pc-cal-nav" id="cal-prev">&#8592;</button>
-            <div class="pc-cal-months" id="cal-months"></div>
-            <button class="pc-cal-nav" id="cal-next">&#8594;</button>
-          </div>
-          <div class="pc-cal-grids" id="cal-grids"></div>
-          <div class="pc-cal-selected" id="cal-selected">
-            <span id="cal-sel-checkin">Anreise wählen</span>
-            <span class="pc-cal-arrow">→</span>
-            <span id="cal-sel-checkout">Abreise wählen</span>
-          </div>
-        </div>
 
-        <div class="pc-inputs">
-          <div class="pc-field">
+        <!-- Kalender -->
+        <div class="pc-cal-header">
+          <button class="pc-cal-nav" id="cal-prev">&#8592;</button>
+          <div class="pc-cal-months" id="cal-months"></div>
+          <button class="pc-cal-nav" id="cal-next">&#8594;</button>
+        </div>
+        <div class="pc-cal-grids" id="cal-grids"></div>
+
+        <!-- Trennlinie + Anreise/Abreise + Personen -->
+        <div class="pc-bottom-bar">
+          <div class="pc-dates-row">
+            <div class="pc-date-slot">
+              <span class="pc-date-label">Anreise</span>
+              <span class="pc-date-val" id="cal-sel-checkin">—</span>
+            </div>
+            <span class="pc-date-sep">→</span>
+            <div class="pc-date-slot">
+              <span class="pc-date-label">Abreise</span>
+              <span class="pc-date-val" id="cal-sel-checkout">—</span>
+            </div>
+          </div>
+          <div class="pc-persons-row">
             <label for="pc-persons">Personen</label>
             <select id="pc-persons">
               <option value="1">1</option>
@@ -951,96 +955,24 @@
           </div>
         </div>
 
+        <!-- Fehler -->
         <div class="pc-error" id="pc-error" style="display:none;"></div>
 
+        <!-- Preis (erscheint sobald Daten gewählt) -->
         <div class="pc-result" id="pc-result" style="display:none;">
           <div class="pc-nights" id="pc-nights"></div>
-          
-          <div class="pc-breakdown-section">
-            <div class="pc-breakdown-title">Preisaufstellung</div>
-            <div class="pc-breakdown" id="pc-breakdown"></div>
-          </div>
-
+          <div class="pc-breakdown" id="pc-breakdown"></div>
           <div class="pc-discount" id="pc-discount" style="display:none;"></div>
-
           <div class="pc-total">
-            <span>Gesamtpreis</span>
+            <span>Gesamt</span>
             <strong id="pc-total">—</strong>
           </div>
-
-          <a class="cta cta-primary" href="/kontakt/" style="width:100%;justify-content:center;margin-top:1.5rem;">
+          <a class="cta cta-primary" href="/kontakt/" style="width:100%;justify-content:center;margin-top:1.2rem;">
             Jetzt anfragen
           </a>
         </div>
+
       </div>
-
-      <!-- Info Cards Grid -->
-      <div class="price-info-grid">
-        <div class="price-info-card">
-          <div class="pic-icon">📅</div>
-          <h3>Saisonpreise</h3>
-          <div class="pic-list">
-            <div class="pic-row">
-              <span>Nov – Apr</span>
-              <strong>89 €</strong>
-            </div>
-            <div class="pic-row">
-              <span>Mai – Jun & Sep – Okt</span>
-              <strong>99 €</strong>
-            </div>
-            <div class="pic-row pic-highlight">
-              <span>Jul – Aug & Feiertage</span>
-              <strong>109 €</strong>
-            </div>
-          </div>
-        </div>
-
-        <div class="price-info-card">
-          <div class="pic-icon">🏠</div>
-          <h3>Inklusive</h3>
-          <ul class="pic-checklist">
-            <li>Bettwäsche für alle Gäste</li>
-            <li>Endreinigung</li>
-            <li>73 m² für bis zu 6 Personen</li>
-            <li>Anreise ab 15:30 Uhr</li>
-          </ul>
-        </div>
-
-        <div class="price-info-card">
-          <div class="pic-icon">💰</div>
-          <h3>Rabatte</h3>
-          <div class="pic-list">
-            <div class="pic-row">
-              <span>Ab 7 Nächten</span>
-              <strong>−15 %</strong>
-            </div>
-            <div class="pic-row">
-              <span>Frühbucher (&gt;60 Tage)</span>
-              <strong>−10 %</strong>
-            </div>
-            <div class="pic-row">
-              <span>Last-Minute (≤7 Tage)</span>
-              <strong>−10 %</strong>
-            </div>
-          </div>
-        </div>
-
-        <div class="price-info-card">
-          <div class="pic-icon">⏱</div>
-          <h3>Mindestaufenthalt</h3>
-          <div class="pic-list">
-            <div class="pic-row">
-              <span>Nebensaison</span>
-              <strong>2–3 Nächte</strong>
-            </div>
-            <div class="pic-row pic-highlight">
-              <span>Hochsaison</span>
-              <strong>5–7 Nächte</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </section>
 
     <style>
@@ -1048,89 +980,28 @@
       .pricing-header {
         text-align: center;
         max-width: 640px;
-        margin: 0 auto 3rem;
+        margin: 0 auto 2rem;
       }
-      .pricing-header h2 {
-        margin-bottom: 0.6rem;
-      }
-      .pricing-header p {
-        font-size: 1.05rem;
-        color: var(--text-muted);
-        margin: 0;
-      }
+      .pricing-header h2 { margin-bottom: 0; }
 
       .price-calculator {
         background: var(--glass-strong);
         border: 1px solid var(--glass-border);
         border-radius: 24px;
-        padding: 2rem;
-        max-width: 720px;
-        margin: 0 auto 3rem;
+        overflow: hidden;
+        max-width: 760px;
+        margin: 0 auto;
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
         box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       }
 
-      .pc-inputs {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1.2rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .pc-field label {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--moss);
-        margin-bottom: 0.5rem;
-      }
-
-      .pc-field input,
-      .pc-field select {
-        width: 100%;
-        padding: 0.85rem 1rem;
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.2);
-        background: rgba(255,255,255,0.06);
-        color: #fff;
-        font-size: 1.05rem;
-        font-family: inherit;
-        transition: all 0.2s;
-      }
-
-      .pc-field input:focus,
-      .pc-field select:focus {
-        outline: none;
-        border-color: var(--moss);
-        background: rgba(255,255,255,0.1);
-        box-shadow: 0 0 0 3px rgba(78, 204, 163, 0.15);
-      }
-
-      .pc-field input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(1) opacity(0.7);
-        cursor: pointer;
-      }
-
-      .pc-field select { cursor: pointer; }
-      .pc-field select option { background: #1a2535; color: #fff; }
-
-      /* ── Calendar Widget ── */
-      .pc-calendar-wrap {
-        margin-bottom: 1.5rem;
-        border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 16px;
-        overflow: hidden;
-        background: rgba(255,255,255,0.04);
-      }
-
+      /* ── Calendar header ── */
       .pc-cal-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.9rem 1.2rem;
+        padding: 1rem 1.4rem;
         border-bottom: 1px solid rgba(255,255,255,0.1);
       }
 
@@ -1149,52 +1020,45 @@
         transition: background 0.2s;
         flex-shrink: 0;
       }
-
-      .pc-cal-nav:hover { background: rgba(255,255,255,0.18); }
+      .pc-cal-nav:hover { background: rgba(255,255,255,0.2); }
 
       .pc-cal-months {
         display: flex;
         gap: 2rem;
         font-weight: 600;
         font-size: 0.95rem;
-        letter-spacing: 0.04em;
         color: #fff;
         flex: 1;
         justify-content: center;
       }
 
+      /* ── Calendar grids ── */
       .pc-cal-grids {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 0;
       }
 
-      @media (max-width: 600px) {
+      @media (max-width: 580px) {
         .pc-cal-grids { grid-template-columns: 1fr; }
-        .pc-cal-months { gap: 1rem; }
+        .pc-cal-months { gap: 0.5rem; font-size: 0.85rem; }
       }
 
-      .pc-cal-month {
-        padding: 1rem 1.2rem;
-      }
-
-      .pc-cal-month:first-child {
-        border-right: 1px solid rgba(255,255,255,0.1);
-      }
+      .pc-cal-month { padding: 1rem 1.2rem; }
+      .pc-cal-month:first-child { border-right: 1px solid rgba(255,255,255,0.08); }
 
       .pc-cal-weekdays {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        margin-bottom: 0.4rem;
+        margin-bottom: 0.3rem;
       }
 
       .pc-cal-weekday {
         text-align: center;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         font-weight: 600;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.05em;
         color: var(--text-muted);
-        padding: 0.3rem 0;
+        padding: 0.25rem 0;
         text-transform: uppercase;
       }
 
@@ -1206,133 +1070,150 @@
 
       .pc-cal-day {
         text-align: center;
-        padding: 0.45rem 0.1rem;
-        border-radius: 8px;
-        font-size: 0.88rem;
+        padding: 0.42rem 0;
+        border-radius: 6px;
+        font-size: 0.87rem;
         cursor: pointer;
         color: var(--text-muted);
-        transition: background 0.15s, color 0.15s;
+        transition: background 0.12s, color 0.12s;
         user-select: none;
       }
-
       .pc-cal-day:hover:not(.pc-cal-empty):not(.pc-cal-past) {
-        background: rgba(78, 204, 163, 0.2);
+        background: rgba(78,204,163,0.2);
         color: #fff;
       }
-
       .pc-cal-day.pc-cal-empty,
-      .pc-cal-day.pc-cal-past {
-        cursor: default;
-        opacity: 0.3;
-      }
-
-      .pc-cal-day.pc-cal-today {
-        color: var(--moss);
-        font-weight: 700;
-      }
-
+      .pc-cal-day.pc-cal-past { cursor: default; opacity: 0.25; }
+      .pc-cal-day.pc-cal-today { color: var(--moss); font-weight: 700; }
       .pc-cal-day.pc-cal-checkin,
       .pc-cal-day.pc-cal-checkout {
         background: var(--moss);
         color: #0a1410;
         font-weight: 700;
-        border-radius: 8px;
       }
-
       .pc-cal-day.pc-cal-inrange {
-        background: rgba(78, 204, 163, 0.18);
+        background: rgba(78,204,163,0.18);
         color: #fff;
         border-radius: 0;
       }
+      .pc-cal-day.pc-cal-checkin  { border-radius: 6px 0 0 6px; }
+      .pc-cal-day.pc-cal-checkout { border-radius: 0 6px 6px 0; }
+      .pc-cal-day.pc-cal-checkin.pc-cal-checkout { border-radius: 6px; }
 
-      .pc-cal-day.pc-cal-checkin { border-radius: 8px 0 0 8px; }
-      .pc-cal-day.pc-cal-checkout { border-radius: 0 8px 8px 0; }
-      .pc-cal-day.pc-cal-checkin.pc-cal-checkout { border-radius: 8px; }
-
-      .pc-cal-selected {
+      /* ── Bottom bar: dates + persons ── */
+      .pc-bottom-bar {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
         gap: 1rem;
-        padding: 0.9rem 1.2rem;
+        padding: 1rem 1.4rem;
         border-top: 1px solid rgba(255,255,255,0.1);
-        font-size: 0.9rem;
-        color: var(--text-muted);
+        background: rgba(255,255,255,0.03);
       }
 
-      .pc-cal-selected span.pc-cal-arrow { color: var(--moss); }
+      .pc-dates-row {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
 
-      #cal-sel-checkin.active,
-      #cal-sel-checkout.active {
-        color: #fff;
+      .pc-date-slot {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+
+      .pc-date-label {
+        font-size: 0.72rem;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--moss);
       }
 
-      .pc-error {
-        background: rgba(255, 80, 80, 0.15);
-        border: 1px solid rgba(255, 80, 80, 0.4);
-        border-radius: 12px;
-        padding: 1rem 1.2rem;
-        color: #ffaaaa;
+      .pc-date-val {
         font-size: 0.95rem;
-        margin-bottom: 1rem;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+      .pc-date-val.active { color: #fff; }
+
+      .pc-date-sep { color: var(--moss); font-size: 1.1rem; }
+
+      .pc-persons-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .pc-persons-row label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--moss);
+      }
+      .pc-persons-row select {
+        padding: 0.4rem 0.7rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.06);
+        color: #fff;
+        font-size: 0.95rem;
+        font-family: inherit;
+        cursor: pointer;
+      }
+      .pc-persons-row select option { background: #1a2535; }
+
+      /* ── Error ── */
+      .pc-error {
+        margin: 0 1.4rem 0;
+        background: rgba(255,80,80,0.12);
+        border: 1px solid rgba(255,80,80,0.35);
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        color: #ffaaaa;
+        font-size: 0.9rem;
       }
 
+      /* ── Result ── */
       .pc-result {
-        margin-top: 2rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid rgba(255,255,255,0.12);
+        padding: 1.2rem 1.4rem 1.4rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
       }
 
       .pc-nights {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         color: var(--text-muted);
-        margin-bottom: 1.2rem;
-        text-align: center;
-      }
-
-      .pc-breakdown-section {
-        background: rgba(255,255,255,0.04);
-        border-radius: 12px;
-        padding: 1rem 1.2rem;
-        margin-bottom: 1rem;
-      }
-
-      .pc-breakdown-title {
-        font-size: 0.8rem;
+        margin-bottom: 0.8rem;
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-muted);
-        margin-bottom: 0.7rem;
-        font-weight: 600;
+        letter-spacing: 0.06em;
       }
 
       .pc-breakdown {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.4rem;
+        margin-bottom: 0.8rem;
       }
 
       .pc-breakdown-row {
         display: flex;
         justify-content: space-between;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         color: var(--text-muted);
       }
-
-      .pc-breakdown-row strong {
-        color: #fff;
-      }
+      .pc-breakdown-row strong { color: #fff; }
 
       .pc-discount {
-        background: rgba(78, 204, 163, 0.12);
-        border: 1px solid rgba(78, 204, 163, 0.35);
-        border-radius: 10px;
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
+        background: rgba(78,204,163,0.1);
+        border: 1px solid rgba(78,204,163,0.3);
+        border-radius: 8px;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.88rem;
         color: var(--moss);
         font-weight: 600;
-        margin-bottom: 1rem;
+        margin-bottom: 0.8rem;
         text-align: center;
       }
 
@@ -1340,111 +1221,15 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1.2rem 0;
-        border-top: 2px solid rgba(255,255,255,0.15);
-        font-size: 1.15rem;
+        padding: 0.9rem 0 0;
+        border-top: 2px solid rgba(255,255,255,0.12);
+        font-size: 1rem;
         color: #fff;
       }
-
       .pc-total strong {
         font-family: "Fraunces", serif;
-        font-size: 2rem;
+        font-size: 1.9rem;
         color: var(--moss);
-      }
-
-      /* Info Cards Grid */
-      .price-info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 1.5rem;
-        max-width: 1100px;
-        margin: 0 auto;
-      }
-
-      .price-info-card {
-        background: var(--glass);
-        border: 1px solid var(--glass-border);
-        border-radius: 18px;
-        padding: 1.8rem;
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        transition: transform 0.2s, box-shadow 0.2s;
-      }
-
-      .price-info-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-      }
-
-      .pic-icon {
-        font-size: 2.2rem;
-        margin-bottom: 0.8rem;
-      }
-
-      .price-info-card h3 {
-        margin: 0 0 1rem;
-        font-family: "Fraunces", serif;
-        font-size: 1.3rem;
-        color: #fff;
-      }
-
-      .pic-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-      }
-
-      .pic-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem 0;
-        border-bottom: 1px dashed rgba(255,255,255,0.1);
-        font-size: 0.95rem;
-        color: var(--text-muted);
-      }
-
-      .pic-row:last-child {
-        border-bottom: none;
-      }
-
-      .pic-row strong {
-        color: #fff;
-        font-size: 1.05rem;
-      }
-
-      .pic-row.pic-highlight {
-        color: #fff;
-        font-weight: 600;
-      }
-
-      .pic-row.pic-highlight strong {
-        color: var(--ember);
-      }
-
-      .pic-checklist {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-      }
-
-      .pic-checklist li {
-        padding-left: 1.8rem;
-        position: relative;
-        color: var(--text-muted);
-        font-size: 0.95rem;
-      }
-
-      .pic-checklist li::before {
-        content: "✓";
-        position: absolute;
-        left: 0;
-        color: var(--moss);
-        font-weight: bold;
-        font-size: 1.1rem;
       }
     </style>
 
@@ -2160,8 +1945,8 @@
           // Update selected display
           const ciEl = document.getElementById("cal-sel-checkin");
           const coEl = document.getElementById("cal-sel-checkout");
-          ciEl.textContent = window.calCheckin ? fmt(window.calCheckin) : "Anreise wählen";
-          coEl.textContent = window.calCheckout ? fmt(window.calCheckout) : "Abreise wählen";
+          ciEl.textContent = window.calCheckin ? fmt(window.calCheckin) : "—";
+          coEl.textContent = window.calCheckout ? fmt(window.calCheckout) : "—";
           ciEl.classList.toggle("active", !!window.calCheckin);
           coEl.classList.toggle("active", !!window.calCheckout);
         }
