@@ -1,0 +1,2211 @@
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Buchecker · Ferienhaus am Twistesee</title>
+    <link rel="icon" type="image/png" href="assets/icon2.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,800&family=Source+Sans+3:wght@300;400;600&family=Montserrat:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <style>
+      :root {
+        --ink: #0d1117;
+        --mist: #e8f0f7;
+        --moss: #4ecca3;
+        --ember: #f9a825;
+        --shadow: rgba(0, 0, 0, 0.45);
+        --glass: rgba(255, 255, 255, 0.10);
+        --glass-border: rgba(255, 255, 255, 0.20);
+        --glass-strong: rgba(255, 255, 255, 0.18);
+        --text: #e8f0f7;
+        --text-muted: rgba(232, 240, 247, 0.65);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Montserrat", "Source Sans 3", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(62, 94, 77, 0.55) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(30, 60, 80, 0.6) 0%, transparent 55%),
+          radial-gradient(ellipse at 60% 10%, rgba(78, 204, 163, 0.18) 0%, transparent 45%),
+          #0b1220;
+        background-attachment: fixed;
+        min-height: 100vh;
+      }
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.65rem 6vw;
+        background: rgba(11, 18, 32, 0.55);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-weight: 600;
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      .nav-brand img {
+        width: 44px;
+        height: 44px;
+        border-radius: 6px;
+      }
+
+      .nav-brand-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+      }
+
+      .nav-brand-title {
+        font-family: "Montserrat", sans-serif;
+        font-weight: 700;
+        font-size: 1.27rem;
+        letter-spacing: 0.02em;
+        color: #fff;
+      }
+
+      .nav-brand-subtitle {
+        font-family: "Montserrat", sans-serif;
+        font-weight: 500;
+        font-size: 0.73rem;
+        letter-spacing: 0em;
+        text-transform: uppercase;
+        color: var(--moss);
+        display: block;
+        width: 100%;
+        text-align: justify;
+        text-align-last: justify;
+      }
+
+      .nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+
+      .nav a:hover {
+        color: var(--moss);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.2rem;
+        align-items: center;
+      }
+
+      .nav-cta {
+        padding: 0.5rem 1.1rem;
+        border-radius: 999px;
+        background: var(--glass-strong);
+        border: 1px solid var(--glass-border);
+        color: var(--text) !important;
+        backdrop-filter: blur(10px);
+      }
+
+      .nav-cta:hover {
+        background: rgba(78, 204, 163, 0.25) !important;
+        color: var(--moss) !important;
+      }
+
+      .nav select {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        border-radius: 999px;
+        border: 1px solid var(--glass-border);
+        padding: 0.35rem 2rem 0.35rem 0.7rem;
+        font-weight: 600;
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, rgba(232,240,247,0.7) 50%),
+          linear-gradient(135deg, rgba(232,240,247,0.7) 50%, transparent 50%);
+        background-position: calc(100% - 14px) 55%, calc(100% - 8px) 55%;
+        background-size: 5px 5px, 5px 5px;
+        background-repeat: no-repeat;
+      }
+
+      .hero {
+        height: 100vh;
+        background: linear-gradient(
+            160deg,
+            rgba(10, 20, 15, 0.55),
+            rgba(10, 20, 30, 0.25)
+          ),
+          url("assets/cover.jpg") center 55%/cover no-repeat;
+        display: grid;
+        place-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at 20% 10%,
+          rgba(78, 204, 163, 0.12),
+          transparent 55%
+        );
+        mix-blend-mode: screen;
+        pointer-events: none;
+      }
+
+      .hero-card {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 24px;
+        padding: clamp(1.5rem, 3vw, 2.5rem);
+        width: min(92%, 680px);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        animation: rise 1.2s ease-out both;
+      }
+
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--moss);
+        margin-bottom: 1rem;
+      }
+
+      h1 {
+        font-family: "Montserrat", serif;
+        font-size: clamp(2.6rem, 6vw, 4.4rem);
+        margin: 0 0 1rem;
+        line-height: 1.05;
+        color: #fff;
+        font-weight: 700;
+      }
+
+      .lede {
+        font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        max-width: 34rem;
+        color: rgba(255,255,255,0.82);
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .cta {
+        padding: 0.85rem 1.6rem;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      }
+
+      .cta-primary {
+        background: rgba(78, 204, 163, 0.25);
+        border-color: rgba(78, 204, 163, 0.5);
+        color: #fff;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 24px rgba(78, 204, 163, 0.2);
+      }
+
+      .cta-primary:hover {
+        background: rgba(78, 204, 163, 0.4);
+      }
+
+      .cta-secondary {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.25);
+        color: #fff;
+        backdrop-filter: blur(10px);
+      }
+
+      .cta-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .cta:hover {
+        transform: translateY(-2px);
+      }
+
+      .info-strip {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.4rem;
+        margin-top: 2.2rem;
+        padding-top: 1.4rem;
+        border-top: 1px solid rgba(255,255,255,0.15);
+      }
+
+      .info-item { animation: fadeUp 0.9s ease both; }
+      .info-item:nth-child(2) { animation-delay: 0.15s; }
+      .info-item:nth-child(3) { animation-delay: 0.3s; }
+
+      .info-stat {
+        font-family: "Fraunces", serif;
+        font-size: 2.4rem;
+        font-weight: 600;
+        margin: 0 0 0.2rem;
+        color: var(--moss);
+      }
+
+      .info-title {
+        font-family: "Fraunces", serif;
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+        color: #fff;
+      }
+
+      .info-text {
+        margin: 0;
+        font-size: 0.98rem;
+        color: var(--text-muted);
+      }
+
+      .section {
+        padding: clamp(3rem, 6vw, 5rem) 6vw;
+        background: transparent;
+        position: relative;
+      }
+
+      .section-alt {
+        background: transparent;
+      }
+
+      .section-ink {
+        background: rgba(10, 16, 20, 0.5);
+        backdrop-filter: blur(12px);
+      }
+
+      .section-ink h2 { color: var(--ember); }
+
+      .section h2 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(2rem, 4vw, 2.8rem);
+        margin-bottom: 1.2rem;
+        color: #fff;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 1.8rem;
+      }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .photo-card {
+        background: var(--glass);
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 18px 35px rgba(0,0,0,0.35);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .photo-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 28px 50px rgba(0,0,0,0.45);
+      }
+
+      .photo-card img {
+        width: 100%;
+        display: block;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+      }
+
+      .photo-card h3 {
+        margin: 0;
+        padding: 1rem 1.2rem 0.3rem;
+        font-family: "Fraunces", serif;
+        color: #fff;
+      }
+
+      .photo-card p {
+        margin: 0;
+        padding: 0 1.2rem 1.2rem;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+
+      .photo-link {
+        display: block;
+        position: relative;
+      }
+
+      .photo-link::after {
+        content: "Vollbild";
+        position: absolute;
+        right: 1rem;
+        bottom: 1rem;
+        background: rgba(0,0,0,0.55);
+        backdrop-filter: blur(6px);
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 0.35rem 0.6rem;
+        border-radius: 999px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+        z-index: 999;
+        padding: 6vh 6vw;
+      }
+
+      .lightbox.open { opacity: 1; pointer-events: auto; }
+
+      .lightbox img {
+        max-width: min(90vw, 1100px);
+        max-height: 82vh;
+        width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: 0 28px 80px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255,255,255,0.15);
+      }
+
+      .lightbox-close {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        color: #fff;
+        font-size: 1rem;
+        cursor: pointer;
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 0.5rem 0.9rem;
+        border-radius: 999px;
+        line-height: 1;
+      }
+
+      .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #fff;
+        font-size: 1.4rem;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+        user-select: none;
+      }
+
+      .lightbox-nav:hover { background: rgba(255,255,255,0.25); }
+      .lightbox-nav.prev { left: 1.5rem; }
+      .lightbox-nav.next { right: 1.5rem; }
+
+      .lightbox-counter {
+        position: absolute;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255,255,255,0.6);
+        font-size: 0.85rem;
+        letter-spacing: 0.1em;
+      }
+
+      .detail-item {
+        padding: 0 0 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+
+      .detail-item h3 {
+        margin-top: 0;
+        font-family: "Fraunces", serif;
+        color: #fff;
+      }
+
+      .amenities {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.9rem 1.8rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .amenity {
+        display: grid;
+        grid-template-columns: 18px 1fr;
+        gap: 0.6rem;
+        padding: 0.7rem 1rem;
+        border-radius: 12px;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .amenity::before {
+        content: "•";
+        color: var(--moss);
+        font-size: 1.4rem;
+        line-height: 1;
+      }
+
+      .amenity strong {
+        display: block;
+        margin-bottom: 0.3rem;
+        color: #fff;
+      }
+
+      .amenity-note {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 2rem;
+        align-items: center;
+      }
+
+      .rates { padding: 0; }
+
+      .price-cards { display: grid; gap: 1rem; }
+
+      .price-card {
+        background: var(--glass);
+        border-radius: 14px;
+        padding: 1rem 1.2rem;
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+
+      .price-card h3 {
+        margin: 0 0 0.3rem;
+        font-family: "Fraunces", serif;
+        color: #fff;
+      }
+
+      .rate-row {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px dashed rgba(255,255,255,0.15);
+        padding: 0.6rem 0;
+        color: var(--text-muted);
+      }
+
+      .rate-row strong { color: #fff; }
+      .rate-row:last-child { border-bottom: none; }
+
+      .activities {
+        margin-top: 1.6rem;
+      }
+
+      .activity-map {
+        border-radius: 22px;
+        overflow: hidden;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+      }
+
+      .activity-map #activity-map {
+        width: 100%;
+        height: 520px;
+      }
+
+      .activity-map-caption {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 1.1rem;
+        font-size: 0.9rem;
+        background: rgba(11, 18, 32, 0.7);
+        backdrop-filter: blur(12px);
+        color: var(--text-muted);
+      }
+
+      .activity-map-caption a {
+        color: var(--moss);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .activity-intro {
+        margin: 0.8rem 0 1.2rem;
+        max-width: 46rem;
+        color: var(--text-muted);
+      }
+
+      .map-widget {
+        background: rgba(11, 18, 32, 0.75);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 10px;
+        padding: 0.5rem 0.75rem;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        font-family: "Montserrat", sans-serif;
+        color: #fff;
+        min-width: 140px;
+        backdrop-filter: blur(10px);
+      }
+
+      .map-widget strong {
+        display: block;
+        font-size: 0.88rem;
+      }
+
+      .activity-notes {
+        margin-top: 1.4rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem 1.6rem;
+      }
+
+      .activity-link {
+        display: grid;
+        grid-template-columns: 54px 1fr;
+        gap: 0.8rem;
+        text-align: left;
+        padding: 0.7rem 0.9rem;
+        border-radius: 14px;
+        border: 1px solid var(--glass-border);
+        background: var(--glass);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease;
+      }
+
+      .activity-link:hover {
+        background: var(--glass-strong);
+        border-color: rgba(78, 204, 163, 0.35);
+        color: var(--text);
+      }
+
+      .activity-thumb {
+        width: 54px;
+        height: 54px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .activity-meta h3 {
+        margin: 0 0 0.2rem;
+        font-family: "Fraunces", serif;
+        font-size: 1rem;
+        color: #fff;
+      }
+
+      .activity-meta p {
+        margin: 0 0 0.3rem;
+        font-size: 0.9rem;
+      }
+
+      .activity-distance {
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--moss);
+      }
+
+      .footer {
+        padding: 2.5rem 6vw 4rem;
+        background: rgba(5, 10, 18, 0.8);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid var(--glass-border);
+        color: var(--text-muted);
+      }
+
+      .footer a {
+        color: var(--moss);
+        text-decoration: none;
+      }
+
+      .footer strong {
+        color: var(--ember);
+      }
+
+      @keyframes rise {
+        from { opacity: 0; transform: translateY(30px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      @media (max-width: 720px) {
+        .nav { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+        .cta-row { flex-direction: column; align-items: stretch; }
+        .hero-card { backdrop-filter: blur(10px); }
+      }
+
+      @media (max-width: 900px) {
+        .activity-map #activity-map { height: 360px; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <a class="nav-brand" href="/">
+        <img src="assets/icon.png" alt="Icon" />
+        <div class="nav-brand-text">
+          <span class="nav-brand-title">BUCHECKER</span>
+          <span class="nav-brand-subtitle">Ferienhaus am See</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="#details">Haus</a>
+        <a href="#preise">Preise</a>
+        <a href="#aktivitaeten">Aktivitäten</a>
+        <a href="/kontakt/">Kontakt</a>
+        <a href="/faq/">FAQ</a>
+      </div>
+    </nav>
+    <header class="hero">
+      <div class="hero-card">
+        <h1>BUCHECKER<br>FERIENHAUS</h1>
+        <p class="lede">
+          Waldrand, Wasser, Stille. Aufwachen mit Vogelstimmen, den Tag auf dem See verbringen, den Abend auf der Terrasse genießen.
+        </p>
+        <div class="cta-row">
+          <a class="cta cta-primary" href="#anfrage">Jetzt buchen</a>
+          <a class="cta cta-secondary" href="#aktivitaeten">Aktivitäten</a>
+        </div>
+        
+      </div>
+    </header>
+
+    <section class="section section-alt">
+      <div class="two-col">
+        <div>
+          <h2>Alles, was man für Tage am See braucht.</h2>
+          <p style="color:rgba(232,240,247,0.8);">
+            Von der voll ausgestatteten Küche bis zum Grill: alles ist
+            vorbereitet. Packen Sie nur Ihre Lieblingsmenschen ein.
+          </p>
+          <p class="amenity-note">
+            Alles ist auf entspannte Anreise ausgelegt — kurze Wege, klare
+            Abläufe, hochwertige Ausstattung.
+          </p>
+        </div>
+        <ul class="amenities">
+          <li class="amenity">
+            <div>
+              <strong>Küche</strong>
+              Backofen, Espressomaschine, Kühlschrank, Geschirrspüler.
+            </div>
+          </li>
+          <li class="amenity">
+            <div>
+              <strong>Outdoor</strong>
+              Grill, Loungemöbel, Terrasse.
+            </div>
+          </li>
+          <li class="amenity">
+            <div>
+              <strong>Internet</strong>
+              5G, schnelle Verbindung.
+            </div>
+          </li>
+          <li class="amenity">
+            <div>
+              <strong>Familie</strong>
+              Babybett, Hochstuhl, Spiele, Minigolfschläger.
+            </div>
+          </li>
+          <li class="amenity">
+            <div>
+              <strong>Komfort</strong>
+              Smart-TV, Waschmaschine.
+            </div>
+          </li>
+          <li class="amenity">
+            <div>
+              <strong>Terrasse</strong>
+              Sonnendeck, Loungemöbel, Seeblick.
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="galerie">
+      <h2>Einblicke</h2>
+      <div class="gallery">
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/wohnzimmer.jpg" data-alt="Wohnzimmer" href="#">
+            <img src="assets/wohnzimmer.jpg" alt="Wohnzimmer" />
+          </a>
+          <h3>Wohnzimmer</h3>
+          <p>Licht, Holz und viel Raum zum Ankommen.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/wohnzimmer-2.jpg" data-alt="Wohnzimmer Ansicht 2" href="#">
+            <img src="assets/wohnzimmer-2.jpg" alt="Wohnzimmer Ansicht 2" />
+          </a>
+          <h3>Wohnzimmer</h3>
+          <p>Offener Grundriss, gemütliche Atmosphäre.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/essbereich.jpg" data-alt="Essbereich" href="#">
+            <img src="assets/essbereich.jpg" alt="Essbereich" />
+          </a>
+          <h3>Essbereich</h3>
+          <p>Platz für die ganze Familie.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/essbereich-2.jpg" data-alt="Essbereich Ansicht 2" href="#">
+            <img src="assets/essbereich-2.jpg" alt="Essbereich Ansicht 2" />
+          </a>
+          <h3>Essbereich</h3>
+          <p>Offene Küche direkt angebunden.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/eltern-schlafzimmer.jpg" data-alt="Elternschlafzimmer" href="#">
+            <img src="assets/eltern-schlafzimmer.jpg" alt="Elternschlafzimmer" />
+          </a>
+          <h3>Elternschlafzimmer</h3>
+          <p>Ruhig, hell und komfortabel.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/eltern-schlafzimmer-2.jpg" data-alt="Elternschlafzimmer Ansicht 2" href="#">
+            <img src="assets/eltern-schlafzimmer-2.jpg" alt="Elternschlafzimmer Ansicht 2" />
+          </a>
+          <h3>Elternschlafzimmer</h3>
+          <p>Leinen, Holz, guter Schlaf.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/kinder-schlafzimmer.jpg" data-alt="Kinderschlafzimmer" href="#">
+            <img src="assets/kinder-schlafzimmer.jpg" alt="Kinderschlafzimmer" />
+          </a>
+          <h3>Kinderschlafzimmer</h3>
+          <p>Eigener Rückzugsort für die Kleinen.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/kinder-schlafzimmer-2.jpg" data-alt="Kinderschlafzimmer Ansicht 2" href="#">
+            <img src="assets/kinder-schlafzimmer-2.jpg" alt="Kinderschlafzimmer Ansicht 2" />
+          </a>
+          <h3>Kinderschlafzimmer</h3>
+          <p>Gemütlich und gut ausgestattet.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/kinder-schlafzimmer-3.jpg" data-alt="Kinderschlafzimmer Ansicht 3" href="#">
+            <img src="assets/kinder-schlafzimmer-3.jpg" alt="Kinderschlafzimmer Ansicht 3" />
+          </a>
+          <h3>Kinderschlafzimmer</h3>
+          <p>Viel Platz zum Spielen und Schlafen.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/badezimmer.jpg" data-alt="Badezimmer" href="#">
+            <img src="assets/badezimmer.jpg" alt="Badezimmer" />
+          </a>
+          <h3>Badezimmer</h3>
+          <p>Modern und funktional.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/terasse.jpg" data-alt="Terrasse" href="#">
+            <img src="assets/terasse.jpg" alt="Terrasse" />
+          </a>
+          <h3>Terrasse</h3>
+          <p>Sonnendeck mit Blick ins Grüne.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/terasse-2.jpg" data-alt="Terrasse Ansicht 2" href="#">
+            <img src="assets/terasse-2.jpg" alt="Terrasse Ansicht 2" />
+          </a>
+          <h3>Terrasse</h3>
+          <p>Loungemöbel, Grill, Abendstimmung.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/terasse-3.jpg" data-alt="Terrasse Ansicht 3" href="#">
+            <img src="assets/terasse-3.jpg" alt="Terrasse Ansicht 3" />
+          </a>
+          <h3>Terrasse</h3>
+          <p>Morgens Kaffee, abends Ruhe.</p>
+        </article>
+
+        <article class="photo-card">
+          <a class="photo-link" data-img="assets/eingang.jpg" data-alt="Eingang" href="#">
+            <img src="assets/eingang.jpg" alt="Eingang" />
+          </a>
+          <h3>Eingang</h3>
+          <p>Willkommen ankommen.</p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- JS Lightbox Overlay -->
+    <div class="lightbox" id="lightbox">
+      <span class="lightbox-close" id="lb-close">✕</span>
+      <span class="lightbox-nav prev" id="lb-prev">&#8592;</span>
+      <img id="lb-img" src="" alt="" />
+      <span class="lightbox-nav next" id="lb-next">&#8594;</span>
+      <span class="lightbox-counter" id="lb-counter"></span>
+    </div>
+
+
+    <section class="section section-alt" id="preise">
+      <div class="pricing-header">
+        <h2>Preis berechnen</h2>
+        <p>Wählen Sie Ihre Daten und sehen Sie sofort den Gesamtpreis — inkl. aller Kosten und Rabatte.</p>
+      </div>
+
+      <!-- Main Calculator Card -->
+      <div class="price-calculator">
+        <!-- Calendar date picker -->
+        <div class="pc-calendar-wrap">
+          <div class="pc-cal-header">
+            <button class="pc-cal-nav" id="cal-prev">&#8592;</button>
+            <div class="pc-cal-months" id="cal-months"></div>
+            <button class="pc-cal-nav" id="cal-next">&#8594;</button>
+          </div>
+          <div class="pc-cal-grids" id="cal-grids"></div>
+          <div class="pc-cal-selected" id="cal-selected">
+            <span id="cal-sel-checkin">Anreise wählen</span>
+            <span class="pc-cal-arrow">→</span>
+            <span id="cal-sel-checkout">Abreise wählen</span>
+          </div>
+        </div>
+
+        <div class="pc-inputs">
+          <div class="pc-field">
+            <label for="pc-persons">Personen</label>
+            <select id="pc-persons">
+              <option value="1">1</option>
+              <option value="2" selected>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pc-error" id="pc-error" style="display:none;"></div>
+
+        <div class="pc-result" id="pc-result" style="display:none;">
+          <div class="pc-nights" id="pc-nights"></div>
+          
+          <div class="pc-breakdown-section">
+            <div class="pc-breakdown-title">Preisaufstellung</div>
+            <div class="pc-breakdown" id="pc-breakdown"></div>
+          </div>
+
+          <div class="pc-discount" id="pc-discount" style="display:none;"></div>
+
+          <div class="pc-total">
+            <span>Gesamtpreis</span>
+            <strong id="pc-total">—</strong>
+          </div>
+
+          <a class="cta cta-primary" href="/kontakt/" style="width:100%;justify-content:center;margin-top:1.5rem;">
+            Jetzt anfragen
+          </a>
+        </div>
+      </div>
+
+      <!-- Info Cards Grid -->
+      <div class="price-info-grid">
+        <div class="price-info-card">
+          <div class="pic-icon">📅</div>
+          <h3>Saisonpreise</h3>
+          <div class="pic-list">
+            <div class="pic-row">
+              <span>Nov – Apr</span>
+              <strong>89 €</strong>
+            </div>
+            <div class="pic-row">
+              <span>Mai – Jun & Sep – Okt</span>
+              <strong>99 €</strong>
+            </div>
+            <div class="pic-row pic-highlight">
+              <span>Jul – Aug & Feiertage</span>
+              <strong>109 €</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="price-info-card">
+          <div class="pic-icon">🏠</div>
+          <h3>Inklusive</h3>
+          <ul class="pic-checklist">
+            <li>Bettwäsche für alle Gäste</li>
+            <li>Endreinigung</li>
+            <li>73 m² für bis zu 6 Personen</li>
+            <li>Anreise ab 15:30 Uhr</li>
+          </ul>
+        </div>
+
+        <div class="price-info-card">
+          <div class="pic-icon">💰</div>
+          <h3>Rabatte</h3>
+          <div class="pic-list">
+            <div class="pic-row">
+              <span>Ab 7 Nächten</span>
+              <strong>−15 %</strong>
+            </div>
+            <div class="pic-row">
+              <span>Frühbucher (&gt;60 Tage)</span>
+              <strong>−10 %</strong>
+            </div>
+            <div class="pic-row">
+              <span>Last-Minute (≤7 Tage)</span>
+              <strong>−10 %</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="price-info-card">
+          <div class="pic-icon">⏱</div>
+          <h3>Mindestaufenthalt</h3>
+          <div class="pic-list">
+            <div class="pic-row">
+              <span>Nebensaison</span>
+              <strong>2–3 Nächte</strong>
+            </div>
+            <div class="pic-row pic-highlight">
+              <span>Hochsaison</span>
+              <strong>5–7 Nächte</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <style>
+      /* ===== PRICING SECTION ===== */
+      .pricing-header {
+        text-align: center;
+        max-width: 640px;
+        margin: 0 auto 3rem;
+      }
+      .pricing-header h2 {
+        margin-bottom: 0.6rem;
+      }
+      .pricing-header p {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        margin: 0;
+      }
+
+      .price-calculator {
+        background: var(--glass-strong);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 2rem;
+        max-width: 720px;
+        margin: 0 auto 3rem;
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      }
+
+      .pc-inputs {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .pc-field label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--moss);
+        margin-bottom: 0.5rem;
+      }
+
+      .pc-field input,
+      .pc-field select {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.06);
+        color: #fff;
+        font-size: 1.05rem;
+        font-family: inherit;
+        transition: all 0.2s;
+      }
+
+      .pc-field input:focus,
+      .pc-field select:focus {
+        outline: none;
+        border-color: var(--moss);
+        background: rgba(255,255,255,0.1);
+        box-shadow: 0 0 0 3px rgba(78, 204, 163, 0.15);
+      }
+
+      .pc-field input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1) opacity(0.7);
+        cursor: pointer;
+      }
+
+      .pc-field select { cursor: pointer; }
+      .pc-field select option { background: #1a2535; color: #fff; }
+
+      /* ── Calendar Widget ── */
+      .pc-calendar-wrap {
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.04);
+      }
+
+      .pc-cal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.9rem 1.2rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+
+      .pc-cal-nav {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #fff;
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+        flex-shrink: 0;
+      }
+
+      .pc-cal-nav:hover { background: rgba(255,255,255,0.18); }
+
+      .pc-cal-months {
+        display: flex;
+        gap: 2rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.04em;
+        color: #fff;
+        flex: 1;
+        justify-content: center;
+      }
+
+      .pc-cal-grids {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+      }
+
+      @media (max-width: 600px) {
+        .pc-cal-grids { grid-template-columns: 1fr; }
+        .pc-cal-months { gap: 1rem; }
+      }
+
+      .pc-cal-month {
+        padding: 1rem 1.2rem;
+      }
+
+      .pc-cal-month:first-child {
+        border-right: 1px solid rgba(255,255,255,0.1);
+      }
+
+      .pc-cal-weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        margin-bottom: 0.4rem;
+      }
+
+      .pc-cal-weekday {
+        text-align: center;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        padding: 0.3rem 0;
+        text-transform: uppercase;
+      }
+
+      .pc-cal-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+      }
+
+      .pc-cal-day {
+        text-align: center;
+        padding: 0.45rem 0.1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        cursor: pointer;
+        color: var(--text-muted);
+        transition: background 0.15s, color 0.15s;
+        user-select: none;
+      }
+
+      .pc-cal-day:hover:not(.pc-cal-empty):not(.pc-cal-past) {
+        background: rgba(78, 204, 163, 0.2);
+        color: #fff;
+      }
+
+      .pc-cal-day.pc-cal-empty,
+      .pc-cal-day.pc-cal-past {
+        cursor: default;
+        opacity: 0.3;
+      }
+
+      .pc-cal-day.pc-cal-today {
+        color: var(--moss);
+        font-weight: 700;
+      }
+
+      .pc-cal-day.pc-cal-checkin,
+      .pc-cal-day.pc-cal-checkout {
+        background: var(--moss);
+        color: #0a1410;
+        font-weight: 700;
+        border-radius: 8px;
+      }
+
+      .pc-cal-day.pc-cal-inrange {
+        background: rgba(78, 204, 163, 0.18);
+        color: #fff;
+        border-radius: 0;
+      }
+
+      .pc-cal-day.pc-cal-checkin { border-radius: 8px 0 0 8px; }
+      .pc-cal-day.pc-cal-checkout { border-radius: 0 8px 8px 0; }
+      .pc-cal-day.pc-cal-checkin.pc-cal-checkout { border-radius: 8px; }
+
+      .pc-cal-selected {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        padding: 0.9rem 1.2rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+
+      .pc-cal-selected span.pc-cal-arrow { color: var(--moss); }
+
+      #cal-sel-checkin.active,
+      #cal-sel-checkout.active {
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .pc-error {
+        background: rgba(255, 80, 80, 0.15);
+        border: 1px solid rgba(255, 80, 80, 0.4);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        color: #ffaaaa;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+
+      .pc-result {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.12);
+      }
+
+      .pc-nights {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-bottom: 1.2rem;
+        text-align: center;
+      }
+
+      .pc-breakdown-section {
+        background: rgba(255,255,255,0.04);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1rem;
+      }
+
+      .pc-breakdown-title {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin-bottom: 0.7rem;
+        font-weight: 600;
+      }
+
+      .pc-breakdown {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .pc-breakdown-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+      }
+
+      .pc-breakdown-row strong {
+        color: #fff;
+      }
+
+      .pc-discount {
+        background: rgba(78, 204, 163, 0.12);
+        border: 1px solid rgba(78, 204, 163, 0.35);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        color: var(--moss);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .pc-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 0;
+        border-top: 2px solid rgba(255,255,255,0.15);
+        font-size: 1.15rem;
+        color: #fff;
+      }
+
+      .pc-total strong {
+        font-family: "Fraunces", serif;
+        font-size: 2rem;
+        color: var(--moss);
+      }
+
+      /* Info Cards Grid */
+      .price-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .price-info-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 18px;
+        padding: 1.8rem;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .price-info-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      }
+
+      .pic-icon {
+        font-size: 2.2rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .price-info-card h3 {
+        margin: 0 0 1rem;
+        font-family: "Fraunces", serif;
+        font-size: 1.3rem;
+        color: #fff;
+      }
+
+      .pic-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .pic-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed rgba(255,255,255,0.1);
+        font-size: 0.95rem;
+        color: var(--text-muted);
+      }
+
+      .pic-row:last-child {
+        border-bottom: none;
+      }
+
+      .pic-row strong {
+        color: #fff;
+        font-size: 1.05rem;
+      }
+
+      .pic-row.pic-highlight {
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .pic-row.pic-highlight strong {
+        color: var(--ember);
+      }
+
+      .pic-checklist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .pic-checklist li {
+        padding-left: 1.8rem;
+        position: relative;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+
+      .pic-checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--moss);
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+    </style>
+
+    <script>
+    (function () {
+      // ---- Season / pricing config ----
+      function isHighSeason(date) {
+        const m = date.getMonth() + 1;
+        const d = date.getDate();
+        // July–August
+        if (m === 7 || m === 8) return true;
+        // Christmas/New Year: 23 Dec – 1 Jan
+        if (m === 12 && d >= 23) return true;
+        if (m === 1 && d === 1) return true;
+        return false;
+      }
+
+      function isEaster(year) {
+        // Computus algorithm (Gregorian)
+        const a = year % 19, b = Math.floor(year / 100), c = year % 100;
+        const d = Math.floor(b / 4), e = b % 4;
+        const f = Math.floor((b + 8) / 25);
+        const g = Math.floor((b - f + 1) / 3);
+        const h = (19 * a + b - d - g + 15) % 30;
+        const i = Math.floor(c / 4), k = c % 4;
+        const l = (32 + 2 * e + 2 * i - h - k) % 7;
+        const m2 = Math.floor((a + 11 * h + 22 * l) / 451);
+        const month = Math.floor((h + l - 7 * m2 + 114) / 31);
+        const day = ((h + l - 7 * m2 + 114) % 31) + 1;
+        return new Date(year, month - 1, day); // Easter Sunday
+      }
+
+      function isEasterPeriod(date) {
+        const easter = isEaster(date.getFullYear());
+        const thursday = new Date(easter); thursday.setDate(easter.getDate() - 3);
+        const tuesday = new Date(easter); tuesday.setDate(easter.getDate() + 2);
+        return date >= thursday && date <= tuesday;
+      }
+
+      function isPfingsten(date) {
+        const easter = isEaster(date.getFullYear());
+        const pfingsten = new Date(easter); pfingsten.setDate(easter.getDate() + 49);
+        const start = new Date(pfingsten); start.setDate(pfingsten.getDate() - 1);
+        const end = new Date(pfingsten); end.setDate(pfingsten.getDate() + 1);
+        return date >= start && date <= end;
+      }
+
+      function nightRateForDate(date) {
+        if (isHighSeason(date) || isEasterPeriod(date) || isPfingsten(date)) return 109;
+        const m = date.getMonth() + 1;
+        if (m >= 5 && m <= 6) return 99;
+        if (m >= 9 && m <= 10) return 99;
+        return 89; // Nov–Apr (default low)
+      }
+
+      function isHighSeasonStay(checkin, checkout) {
+        let d = new Date(checkin);
+        while (d < checkout) {
+          if (isHighSeason(d) || isEasterPeriod(d) || isPfingsten(d)) return true;
+          d.setDate(d.getDate() + 1);
+        }
+        return false;
+      }
+
+      function daysBetween(a, b) {
+        return Math.round((b - a) / 86400000);
+      }
+
+      function fmt(n) {
+        return n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+      }
+
+      function calc() {
+        const ciVal = window.calCheckin ? window.calCheckin.toISOString().slice(0,10) : "";
+        const coVal = window.calCheckout ? window.calCheckout.toISOString().slice(0,10) : "";
+        const persons = parseInt(document.getElementById("pc-persons").value, 10);
+        const result = document.getElementById("pc-result");
+        const error = document.getElementById("pc-error");
+        result.style.display = "none";
+        error.style.display = "none";
+
+        if (!ciVal || !coVal) return;
+
+        const ci = new Date(ciVal);
+        const co = new Date(coVal);
+        const today = new Date(); today.setHours(0,0,0,0);
+
+        if (co <= ci) {
+          error.textContent = "⚠ Abreise muss nach der Anreise liegen.";
+          error.style.display = "block";
+          return;
+        }
+
+        const nights = daysBetween(ci, co);
+        const highSeason = isHighSeasonStay(ci, co);
+        const minNights = highSeason ? 5 : 2;
+
+        if (nights < minNights) {
+          error.textContent = "⚠ Mindestaufenthalt: " + minNights + " Nächte" + (highSeason ? " (Hochsaison)" : "") + ".";
+          error.style.display = "block";
+          return;
+        }
+
+        // Nightly cost per day
+        let nightTotal = 0;
+        const breakdown = [];
+        let d = new Date(ci);
+        let currentRate = null, currentCount = 0;
+
+        function flushSegment() {
+          if (currentCount > 0) {
+            breakdown.push({ rate: currentRate, nights: currentCount, subtotal: currentRate * currentCount });
+            nightTotal += currentRate * currentCount;
+          }
+        }
+
+        while (d < co) {
+          const rate = nightRateForDate(d);
+          if (rate !== currentRate) {
+            flushSegment();
+            currentRate = rate;
+            currentCount = 0;
+          }
+          currentCount++;
+          d.setDate(d.getDate() + 1);
+        }
+        flushSegment();
+
+        // Extras
+        const cleaning = 65;
+        const linen = 15 * persons;
+
+        // Discounts (best single discount applies, not stacked)
+        const daysUntil = daysBetween(today, ci);
+        let discountPct = 0;
+        let discountLabel = "";
+
+        if (nights >= 7) {
+          discountPct = 15;
+          discountLabel = "🎉 Rabatt ab 7 Nächten: −15 %";
+        } else if (daysUntil > 60) {
+          discountPct = 10;
+          discountLabel = "🗓 Frühbucherrabatt: −10 %";
+        } else if (daysUntil <= 7 && daysUntil >= 0) {
+          discountPct = 10;
+          discountLabel = "⚡ Last-Minute-Rabatt: −10 %";
+        }
+
+        const discountAmount = Math.round(nightTotal * discountPct) / 100;
+        const nightsAfterDiscount = nightTotal - discountAmount;
+        const total = nightsAfterDiscount + cleaning + linen;
+
+        // Render
+        document.getElementById("pc-nights").textContent =
+          nights + " Nacht" + (nights !== 1 ? "e" : "") + " · " + persons + " Person" + (persons !== 1 ? "en" : "");
+
+        const brkEl = document.getElementById("pc-breakdown");
+        brkEl.innerHTML = "";
+
+        function addRow(label, value) {
+          const row = document.createElement("div");
+          row.className = "pc-breakdown-row";
+          row.innerHTML = "<span>" + label + "</span><strong>" + value + "</strong>";
+          brkEl.appendChild(row);
+        }
+
+        if (breakdown.length === 1) {
+          addRow(nights + " Nacht" + (nights !== 1 ? "e" : "") + " × " + breakdown[0].rate + " €", fmt(nightTotal));
+        } else {
+          breakdown.forEach(function(seg) {
+            addRow(seg.nights + " Nacht" + (seg.nights !== 1 ? "e" : "") + " × " + seg.rate + " €", fmt(seg.subtotal));
+          });
+        }
+
+        if (discountAmount > 0) {
+          addRow("Rabatt (" + discountPct + " %)", "−" + fmt(discountAmount));
+        }
+        addRow("Endreinigung", fmt(cleaning));
+        addRow("Bettwäsche & Handtücher (" + persons + " Pers.)", fmt(linen));
+
+        const discountEl = document.getElementById("pc-discount");
+        if (discountLabel) {
+          discountEl.textContent = discountLabel;
+          discountEl.style.display = "block";
+        } else {
+          discountEl.style.display = "none";
+        }
+
+        document.getElementById("pc-total").textContent = fmt(total);
+
+        result.style.display = "block";
+      }
+
+      document.getElementById("pc-checkin").addEventListener("change", calc);
+      document.getElementById("pc-checkout").addEventListener("change", calc);
+      document.getElementById("pc-persons").addEventListener("change", calc);
+
+      // Set min dates
+      const today = new Date();
+      const todayStr = today.toISOString().slice(0, 10);
+      document.getElementById("pc-checkin").min = todayStr;
+      document.getElementById("pc-checkout").min = todayStr;
+
+      document.getElementById("pc-checkin").addEventListener("change", function () {
+        document.getElementById("pc-checkout").min = this.value;
+      });
+    })();
+    </script>
+
+    <section class="section section-alt" id="aktivitaeten">
+      <h2>Aktivitäten rund um den Twistesee</h2>
+      <p class="activity-intro">
+        Alles Wichtige liegt nah beieinander: hier sehen Sie die Highlights
+        direkt auf der Karte rund um das Ferienhaus. Tippen Sie unten auf eine
+        Station, um dorthin zu springen.
+      </p>
+      <div class="activities">
+        <div class="activity-map">
+          <div id="activity-map" aria-label="Karte der Aktivitäten"></div>
+          <div class="activity-map-caption">
+            <span>Buchecker · Ferienhaus am See</span>
+            <a
+              href="https://www.openstreetmap.org/?mlat=51.3662469&mlon=9.0551705#map=17/51.3662469/9.0551705"
+              target="_blank"
+              rel="noopener"
+            >
+              Große Karte öffnen
+            </a>
+          </div>
+        </div>
+        <div class="activity-notes">
+          <button
+            class="activity-link"
+            data-target="strandbad"
+            data-lat="51.3728235"
+            data-lng="9.0593601"
+          >
+            <img
+              class="activity-thumb"
+              src="assets/placeholder-activity.svg"
+              alt="Platzhalter Strandbad"
+            />
+            <div class="activity-meta">
+              <h3>Strandbad Twistesee</h3>
+              <p>Weißer Sand, Hundestrand, Strandcafé.</p>
+              <span class="activity-distance">...</span>
+            </div>
+          </button>
+          <button
+            class="activity-link"
+            data-target="cafe"
+            data-lat="51.3827363"
+            data-lng="9.0616488"
+          >
+            <img
+              class="activity-thumb"
+              src="assets/placeholder-activity.svg"
+              alt="Platzhalter Café"
+            />
+            <div class="activity-meta">
+              <h3>Café im See</h3>
+              <p>Frühstück mit Blick aufs Wasser.</p>
+              <span class="activity-distance">...</span>
+            </div>
+          </button>
+          <button
+            class="activity-link"
+            data-target="golf"
+            data-lat="51.3743395"
+            data-lng="9.0511925"
+            data-distance="1216"
+          >
+            <img
+              class="activity-thumb"
+              src="assets/placeholder-activity.svg"
+              alt="Platzhalter Golf"
+            />
+            <div class="activity-meta">
+              <h3>Golfclub Bad Arolsen</h3>
+              <p>9-Loch-Anlage am See.</p>
+              <span class="activity-distance">...</span>
+            </div>
+          </button>
+          <button
+            class="activity-link"
+            data-target="boot"
+            data-lat="51.3746186"
+            data-lng="9.0607495"
+          >
+            <img
+              class="activity-thumb"
+              src="assets/placeholder-activity.svg"
+              alt="Platzhalter Bootverleih"
+            />
+            <div class="activity-meta">
+              <h3>Sauermann's Bootverleih</h3>
+              <p>SUP, Kayak, Segeln und Surfen.</p>
+              <span class="activity-distance">...</span>
+            </div>
+          </button>
+          <button
+            class="activity-link"
+            data-target="bad"
+            data-lat="51.3756852"
+            data-lng="9.0053745"
+          >
+            <img
+              class="activity-thumb"
+              src="assets/placeholder-activity.svg"
+              alt="Platzhalter Freizeitbad"
+            />
+            <div class="activity-meta">
+              <h3>Freizeitbad Arobella</h3>
+              <p>Rutsche & Saunalandschaft.</p>
+              <span class="activity-distance">...</span>
+            </div>
+          </button>
+          <button
+            class="activity-link"
+            data-target="cablepark"
+            data-lat="51.3697634"
+            data-lng="9.0547703"
+          >
+            <img
+              class="activity-thumb"
+              src="assets/placeholder-activity.svg"
+              alt="Platzhalter Cablepark"
+            />
+            <div class="activity-meta">
+              <h3>Cablepark Twistesee</h3>
+              <p>Wasserski & Wakeboarden direkt am See.</p>
+              <span class="activity-distance">...</span>
+            </div>
+          </button>
+          <button
+            class="activity-link"
+            data-target="minigolf"
+            data-lat="51.369912884850656"
+            data-lng="9.051165128686012"
+          >
+            <img
+              class="activity-thumb"
+              src="assets/placeholder-activity.svg"
+              alt="Platzhalter Minigolf"
+            />
+            <div class="activity-meta">
+              <h3>Minigolfplatz</h3>
+              <p>Minigolf direkt im Feriendorf. Schläger im Haus.</p>
+              <span class="activity-distance">...</span>
+            </div>
+          </button>
+
+          <button
+            class="activity-link"
+            data-target="schloss"
+            data-lat="51.3831"
+            data-lng="9.0183"
+          >
+            <img
+              class="activity-thumb"
+              src="assets/placeholder-activity.svg"
+              alt="Platzhalter Residenzschloss"
+            />
+            <div class="activity-meta">
+              <h3>Residenzschloss Bad Arolsen</h3>
+              <p>Barockes Schloss mit Museum & Park.</p>
+              <span class="activity-distance">...</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>
+        Buchecker — <strong>Ferienhaus am Twistesee, Nordhessen</strong>
+      </p>
+      <p>
+        Sarah Jirausch · Feriendorf am Twistesee 4 · 34454 Bad Arolsen ·
+        <a href="mailto:ferienhaus4@icloud.com">ferienhaus4@icloud.com</a>
+      </p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+      const map = L.map("activity-map", {
+        scrollWheelZoom: false,
+      }).setView([51.3662469, 9.0551705], 14);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap",
+      }).addTo(map);
+
+      const locations = [
+        {
+          title: "Buchecker",
+          id: "house",
+          coords: [51.3662469, 9.0551705],
+        },
+        {
+          title: "Strandbad Twistesee",
+          id: "strandbad",
+          coords: [51.3728235, 9.0593601],
+        },
+        {
+          title: "Café im See",
+          id: "cafe",
+          coords: [51.3827363, 9.0616488],
+        },
+        {
+          title: "Golfclub Bad Arolsen",
+          id: "golf",
+          coords: [51.3743395, 9.0511925],
+        },
+        {
+          title: "Sauermann's Bootverleih",
+          id: "boot",
+          coords: [51.3746186, 9.0607495],
+        },
+        {
+          title: "Freizeitbad Arobella",
+          id: "bad",
+          coords: [51.3756852, 9.0053745],
+        },
+        {
+          title: "Cablepark Twistesee",
+          id: "cablepark",
+          coords: [51.3697634, 9.0547703],
+        },
+        {
+          title: "Minigolf im Feriendorf",
+          id: "minigolf",
+          coords: [51.369912884850656, 9.051165128686012],
+        },
+        {
+          title: "Residenzschloss Bad Arolsen",
+          id: "schloss",
+          coords: [51.3831, 9.0183],
+        },
+      ];
+
+      const markers = [];
+      const markerIndex = {};
+
+      // Label dimensions (px) used for overlap detection
+      const LABEL_W = 190;
+      const LABEL_H = 38;
+
+      // Convert lat/lng to pixel position at a given zoom for overlap check
+      // We use a simple approach: place all labels, then for each check all
+      // previously placed ones and shift vertically if overlapping.
+      const placedBoxes = []; // { x, y, w, h, id }
+
+      function latlngToPixel(lat, lng, zoom) {
+        // Leaflet uses Web Mercator; approximate pixel offset for overlap detection
+        const scale = 256 * Math.pow(2, zoom);
+        const x = (lng + 180) / 360 * scale;
+        const sinLat = Math.sin(lat * Math.PI / 180);
+        const y = (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale;
+        return { x, y };
+      }
+
+      const CHECK_ZOOM = 14;
+
+      locations.forEach((place) => {
+        const px = latlngToPixel(place.coords[0], place.coords[1], CHECK_ZOOM);
+        // Start with anchor at bottom-center of label
+        let shiftY = 0;
+
+        // Check against all already-placed labels and shift down until no overlap
+        let tries = 0;
+        let overlapping = true;
+        while (overlapping && tries < 20) {
+          overlapping = false;
+          for (const box of placedBoxes) {
+            const myLeft   = px.x - LABEL_W / 2;
+            const myRight  = px.x + LABEL_W / 2;
+            const myTop    = px.y - LABEL_H - shiftY;
+            const myBottom = px.y - shiftY;
+            const overlapX = myLeft < box.x + box.w / 2 && myRight > box.x - box.w / 2;
+            const overlapY = myTop  < box.y + box.h     && myBottom > box.y;
+            if (overlapX && overlapY) {
+              // Push this label up by one label height + 4px gap
+              shiftY += LABEL_H + 4;
+              overlapping = true;
+              break;
+            }
+          }
+          tries++;
+        }
+
+        placedBoxes.push({
+          x: px.x,
+          y: px.y - shiftY,
+          w: LABEL_W,
+          h: LABEL_H,
+        });
+
+        const marker = L.marker(place.coords, {
+          icon: L.divIcon({
+            className: "",
+            html: '<div class="map-widget"><strong>' + place.title + "</strong></div>",
+            iconSize: [LABEL_W, LABEL_H],
+            iconAnchor: [LABEL_W / 2, LABEL_H + shiftY],
+          }),
+        }).addTo(map);
+        markers.push(marker);
+        markerIndex[place.id] = marker;
+      });
+
+      const group = L.featureGroup(markers);
+      map.fitBounds(group.getBounds().pad(0.2));
+
+      function handleJump(button) {
+        const target = button.dataset.target;
+        const marker = markerIndex[target];
+        if (!marker) return;
+        map.setView(marker.getLatLng(), 16, { animate: true });
+      }
+
+      document.querySelectorAll(".activity-link").forEach((button) => {
+        button.addEventListener("click", () => handleJump(button));
+      });
+
+      const house = locations.find((place) => place.id === "house");
+
+      function distanceMeters(lat1, lon1, lat2, lon2) {
+        const radius = 6371000;
+        const toRad = (value) => (value * Math.PI) / 180;
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(toRad(lat1)) *
+            Math.cos(toRad(lat2)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return Math.round(radius * c);
+      }
+
+      document.querySelectorAll(".activity-link").forEach((button) => {
+        const distanceEl = button.querySelector(".activity-distance");
+        if (!distanceEl || !house) return;
+        const manual = button.dataset.distance;
+        if (manual) {
+          distanceEl.textContent = "ca. " + manual + " m";
+          return;
+        }
+        const lat = parseFloat(button.dataset.lat);
+        const lng = parseFloat(button.dataset.lng);
+        if (Number.isNaN(lat) || Number.isNaN(lng)) return;
+        const meters = distanceMeters(house.coords[0], house.coords[1], lat, lng);
+        distanceEl.textContent = "ca. " + meters + " m";
+      });
+    </script>
+
+    <script>
+      /* ── Lightbox ── */
+      (function() {
+        const lb       = document.getElementById("lightbox");
+        const lbImg    = document.getElementById("lb-img");
+        const lbClose  = document.getElementById("lb-close");
+        const lbPrev   = document.getElementById("lb-prev");
+        const lbNext   = document.getElementById("lb-next");
+        const lbCounter= document.getElementById("lb-counter");
+
+        const links = Array.from(document.querySelectorAll(".photo-link[data-img]"));
+        let current = 0;
+
+        function open(index) {
+          current = index;
+          lbImg.src = links[current].dataset.img;
+          lbImg.alt = links[current].dataset.alt || "";
+          lbCounter.textContent = (current + 1) + " / " + links.length;
+          lb.classList.add("open");
+          document.body.style.overflow = "hidden";
+        }
+
+        function close() {
+          lb.classList.remove("open");
+          document.body.style.overflow = "";
+        }
+
+        function prev() { open((current - 1 + links.length) % links.length); }
+        function next() { open((current + 1) % links.length); }
+
+        links.forEach((a, i) => {
+          a.addEventListener("click", function(e) {
+            e.preventDefault();
+            open(i);
+          });
+        });
+
+        lbClose.addEventListener("click", close);
+        lbPrev.addEventListener("click", prev);
+        lbNext.addEventListener("click", next);
+
+        lb.addEventListener("click", function(e) {
+          if (e.target === lb) close();
+        });
+
+        document.addEventListener("keydown", function(e) {
+          if (!lb.classList.contains("open")) return;
+          if (e.key === "ArrowLeft")  prev();
+          if (e.key === "ArrowRight") next();
+          if (e.key === "Escape")     close();
+        });
+      })();
+
+      /* ── Calendar ── */
+      (function() {
+        window.calCheckin  = null;
+        window.calCheckout = null;
+        let selecting = "checkin"; // "checkin" | "checkout"
+
+        const MONTHS_DE = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+        const DAYS_DE   = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+
+        let viewYear  = new Date().getFullYear();
+        let viewMonth = new Date().getMonth(); // 0-based
+
+        function fmt(d) {
+          if (!d) return null;
+          return d.getDate() + ". " + MONTHS_DE[d.getMonth()].slice(0,3) + " " + d.getFullYear();
+        }
+
+        function sameDay(a, b) {
+          return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+        }
+
+        function startOfDay(d) {
+          const x = new Date(d); x.setHours(0,0,0,0); return x;
+        }
+
+        function renderCalendar() {
+          const today = startOfDay(new Date());
+          const grids = document.getElementById("cal-grids");
+          const months = document.getElementById("cal-months");
+          grids.innerHTML = "";
+          months.innerHTML = "";
+
+          for (let m = 0; m < 2; m++) {
+            let mo = viewMonth + m;
+            let yr = viewYear;
+            if (mo > 11) { mo -= 12; yr += 1; }
+
+            // Month label
+            const lbl = document.createElement("span");
+            lbl.textContent = MONTHS_DE[mo] + " " + yr;
+            months.appendChild(lbl);
+
+            // Grid
+            const grid = document.createElement("div");
+            grid.className = "pc-cal-month";
+
+            // Weekday headers
+            const wdRow = document.createElement("div");
+            wdRow.className = "pc-cal-weekdays";
+            DAYS_DE.forEach(d => {
+              const wd = document.createElement("div");
+              wd.className = "pc-cal-weekday";
+              wd.textContent = d;
+              wdRow.appendChild(wd);
+            });
+            grid.appendChild(wdRow);
+
+            // Days
+            const daysEl = document.createElement("div");
+            daysEl.className = "pc-cal-days";
+
+            const firstDay = new Date(yr, mo, 1);
+            // Monday-based: Sunday=7
+            let startOffset = firstDay.getDay(); // 0=Sun
+            startOffset = startOffset === 0 ? 6 : startOffset - 1;
+
+            for (let i = 0; i < startOffset; i++) {
+              const empty = document.createElement("div");
+              empty.className = "pc-cal-day pc-cal-empty";
+              daysEl.appendChild(empty);
+            }
+
+            const daysInMonth = new Date(yr, mo + 1, 0).getDate();
+            for (let day = 1; day <= daysInMonth; day++) {
+              const date = startOfDay(new Date(yr, mo, day));
+              const el = document.createElement("div");
+              el.className = "pc-cal-day";
+              el.textContent = day;
+
+              const isPast = date < today;
+              if (isPast) {
+                el.classList.add("pc-cal-past");
+              } else {
+                if (sameDay(date, today)) el.classList.add("pc-cal-today");
+                if (sameDay(date, window.calCheckin))  el.classList.add("pc-cal-checkin");
+                if (sameDay(date, window.calCheckout)) el.classList.add("pc-cal-checkout");
+                if (window.calCheckin && window.calCheckout && date > window.calCheckin && date < window.calCheckout) {
+                  el.classList.add("pc-cal-inrange");
+                }
+
+                el.addEventListener("click", function() {
+                  handleDayClick(date);
+                });
+              }
+
+              daysEl.appendChild(el);
+            }
+
+            grid.appendChild(daysEl);
+            grids.appendChild(grid);
+          }
+
+          // Update selected display
+          const ciEl = document.getElementById("cal-sel-checkin");
+          const coEl = document.getElementById("cal-sel-checkout");
+          ciEl.textContent = window.calCheckin ? fmt(window.calCheckin) : "Anreise wählen";
+          coEl.textContent = window.calCheckout ? fmt(window.calCheckout) : "Abreise wählen";
+          ciEl.classList.toggle("active", !!window.calCheckin);
+          coEl.classList.toggle("active", !!window.calCheckout);
+        }
+
+        function handleDayClick(date) {
+          if (selecting === "checkin") {
+            window.calCheckin  = date;
+            window.calCheckout = null;
+            selecting = "checkout";
+          } else {
+            if (date <= window.calCheckin) {
+              // Swap: treat as new checkin
+              window.calCheckin  = date;
+              window.calCheckout = null;
+              selecting = "checkout";
+            } else {
+              window.calCheckout = date;
+              selecting = "checkin";
+              // Trigger price calculation
+              if (typeof calc === "function") calc();
+            }
+          }
+          renderCalendar();
+        }
+
+        document.getElementById("cal-prev").addEventListener("click", function() {
+          viewMonth--;
+          if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+          renderCalendar();
+        });
+
+        document.getElementById("cal-next").addEventListener("click", function() {
+          viewMonth++;
+          if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+          renderCalendar();
+        });
+
+        // Also re-render when persons changes
+        document.getElementById("pc-persons").addEventListener("change", function() {
+          if (window.calCheckin && window.calCheckout && typeof calc === "function") calc();
+        });
+
+        renderCalendar();
+      })();
+    </script>
+  </body>
+</html>
