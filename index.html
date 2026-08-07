@@ -1423,19 +1423,6 @@
         result.style.display = "block";
       }
 
-      document.getElementById("pc-checkin").addEventListener("change", calc);
-      document.getElementById("pc-checkout").addEventListener("change", calc);
-      document.getElementById("pc-persons").addEventListener("change", calc);
-
-      // Set min dates
-      const today = new Date();
-      const todayStr = today.toISOString().slice(0, 10);
-      document.getElementById("pc-checkin").min = todayStr;
-      document.getElementById("pc-checkout").min = todayStr;
-
-      document.getElementById("pc-checkin").addEventListener("change", function () {
-        document.getElementById("pc-checkout").min = this.value;
-      });
     })();
     </script>
 
